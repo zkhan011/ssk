@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/kiosk}
+    username: ${SPRING_DATASOURCE_USERNAME:kiosk}
+    password: ${SPRING_DATASOURCE_PASSWORD:kiosk}
+  jpa:
+    hibernate.ddl-auto: validate
+    properties.hibernate.jdbc.time_zone: UTC
+  flyway.enabled: true
+app:
+  jwt-secret: ${APP_JWT_SECRET:dev-change-me-32-byte-secret-key}
+  kiosk-timeout-seconds: ${KIOSK_TIMEOUT_SECONDS:180}
+server.port: ${SERVER_PORT:8080}

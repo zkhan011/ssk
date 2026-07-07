@@ -1,0 +1,1 @@
+package com.ssk.kiosk.model;import jakarta.persistence.*;import lombok.*;@Entity @Getter @Setter @NoArgsConstructor public class AuditLog extends BaseEntity{String actor;String action;String entityType;String entityId;String remarks;}
