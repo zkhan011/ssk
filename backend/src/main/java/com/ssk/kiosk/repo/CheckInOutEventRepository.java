@@ -1,0 +1,1 @@
+package com.ssk.kiosk.repo;import com.ssk.kiosk.model.CheckInOutEvent;import org.springframework.data.jpa.repository.*;import java.util.*;public interface CheckInOutEventRepository extends JpaRepository<CheckInOutEvent,UUID>{boolean existsByPassIdAndEventType(UUID id,String type);}

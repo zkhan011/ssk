@@ -1,0 +1,1 @@
+package com.ssk.kiosk.model;import jakarta.persistence.*;import lombok.*;@Entity @Getter @Setter @NoArgsConstructor public class VisitorCategory extends BaseEntity{String code;String nameEn;String nameAr;boolean approvalRequired;}
