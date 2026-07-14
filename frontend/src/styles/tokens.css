@@ -120,3 +120,86 @@ button, input, select, textarea { font: inherit; }
   .form, .admin { grid-template-columns: 1fr; }
   .metrics { grid-template-columns: 1fr 1fr; }
 }
+
+/* Second screen: gate pass ID validation */
+.gate-pass-screen { grid-template-rows: 242px 1fr 58px; }
+.gate-pass-screen .hero-copy { padding-top: 54px; }
+.gate-pass-screen .hero-copy h1 { font-size: 31px; }
+.gate-pass-screen .figma-body { padding: 0 66px; }
+.stepper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 42px;
+  color: #a7a7ac;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.stepper strong { color: #1f1f27; }
+.stepper span:nth-child(even) { color: #2d2d32; font-size: 20px; line-height: 1; font-weight: 300; }
+.gate-pass-body h2 {
+  position: relative;
+  z-index: 1;
+  margin: 16px 0 6px;
+  color: #08080b;
+  font-size: 19px;
+  line-height: 1.1;
+  font-weight: 950;
+  letter-spacing: -.2px;
+}
+.gate-instruction {
+  position: relative;
+  z-index: 1;
+  max-width: 360px;
+  margin: 0 auto 20px;
+  color: #45454d;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.gate-pass-form { position: relative; z-index: 1; display: grid; justify-items: center; }
+.otp-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 22px; direction: ltr; }
+.otp-box {
+  width: 33px;
+  height: 33px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #1e1e25;
+  border-radius: 4px;
+  background: #fff;
+  color: #0a0a0d;
+  font-size: 20px;
+  font-weight: 900;
+}
+.otp-box:nth-child(4) { margin-inline-end: 20px; }
+.scan-qr-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 17px; min-height: 40px; color: #15151b; font-size: 9px; font-weight: 900; }
+.qr-scan-button { width: 40px; height: 40px; border: 0; border-radius: 5px; background: #10d99b; color: #111; font-size: 24px; line-height: 1; cursor: pointer; }
+.number-pad { display: grid; grid-template-columns: repeat(3, 80px); gap: 24px 31px; margin-bottom: 24px; direction: ltr; }
+.number-pad button {
+  height: 60px;
+  border: 1px solid #5f5f67;
+  border-radius: 4px;
+  background: #fff;
+  color: #000;
+  font-size: 35px;
+  line-height: 1;
+  font-weight: 950;
+  cursor: pointer;
+}
+.number-pad button:active { transform: translateY(1px); background: #f1f1f4; }
+.number-pad .pad-action { font-size: 13px; font-weight: 950; }
+.validate-button { min-width: 264px; margin-top: 0; }
+.validation-error { margin: -12px 0 10px; color: #ad1233; font-size: 12px; font-weight: 800; }
+.validation-card { margin-top: 12px; padding: 10px 18px; border-radius: 8px; background: #fff; box-shadow: 0 8px 20px #0001; }
+.validation-card h3, .validation-card p { margin: 0; }
+
+@media (max-width: 560px) {
+  .gate-pass-screen .figma-body { padding-inline: 20px; }
+  .number-pad { grid-template-columns: repeat(3, 74px); gap: 16px; }
+  .stepper { gap: 7px; font-size: 9px; }
+  .otp-row { gap: 8px; }
+  .otp-box:nth-child(4) { margin-inline-end: 12px; }
+}
