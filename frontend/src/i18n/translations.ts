@@ -32,7 +32,12 @@ export const t = {
     clear: 'CLEAR',
     backspace: 'Backspace',
     validateGatePass: 'Validate Gate Pass',
-    validationRequired: 'Please enter the 8-digit Gate Pass ID.'
+    validationRequired: 'Please enter the 8-digit Gate Pass ID.',
+    verifyingWithTasreeh: 'VERIFYING WITH\nTASREEH',
+    tasreehChecking: 'CHECKING AUTHORISATION DATABASE...',
+    tasreehVerified: 'AUTHORISATION VERIFIED',
+    tasreehRejected: 'AUTHORISATION NOT FOUND',
+    tasreehUnavailable: 'TASREEH SERVICE IS TEMPORARILY UNAVAILABLE'
   },
   ar: {
     welcome: 'مرحباً بك في كشك تصاريح البوابة',
@@ -67,7 +72,12 @@ export const t = {
     clear: 'مسح',
     backspace: 'حذف',
     validateGatePass: 'تحقق من تصريح البوابة',
-    validationRequired: 'يرجى إدخال رقم تصريح البوابة المكون من 8 أرقام.'
+    validationRequired: 'يرجى إدخال رقم تصريح البوابة المكون من 8 أرقام.',
+    verifyingWithTasreeh: 'جارٍ التحقق مع\nتصريح',
+    tasreehChecking: 'جارٍ فحص قاعدة بيانات التصاريح...',
+    tasreehVerified: 'تم التحقق من التصريح',
+    tasreehRejected: 'لم يتم العثور على التصريح',
+    tasreehUnavailable: 'خدمة تصريح غير متاحة مؤقتاً'
   },
   hi: {
     welcome: 'गेट पास कियोस्क में आपका स्वागत है',
@@ -102,7 +112,12 @@ export const t = {
     clear: 'साफ़ करें',
     backspace: 'हटाएँ',
     validateGatePass: 'गेट पास सत्यापित करें',
-    validationRequired: 'कृपया 8 अंकों का गेट पास ID दर्ज करें।'
+    validationRequired: 'कृपया 8 अंकों का गेट पास ID दर्ज करें।',
+    verifyingWithTasreeh: 'TASREEH से\nसत्यापन',
+    tasreehChecking: 'प्राधिकरण डेटाबेस जाँचा जा रहा है...',
+    tasreehVerified: 'प्राधिकरण सत्यापित',
+    tasreehRejected: 'प्राधिकरण नहीं मिला',
+    tasreehUnavailable: 'TASREEH सेवा अस्थायी रूप से उपलब्ध नहीं है'
   },
   ur: {
     welcome: 'گیٹ پاس کیوسک میں خوش آمدید',
@@ -137,7 +152,12 @@ export const t = {
     clear: 'صاف کریں',
     backspace: 'حذف کریں',
     validateGatePass: 'گیٹ پاس کی توثیق کریں',
-    validationRequired: 'براہ کرم 8 ہندسوں کا گیٹ پاس ID درج کریں۔'
+    validationRequired: 'براہ کرم 8 ہندسوں کا گیٹ پاس ID درج کریں۔',
+    verifyingWithTasreeh: 'TASREEH سے\nتصدیق',
+    tasreehChecking: 'اجازت نامہ ڈیٹا بیس چیک کیا جا رہا ہے...',
+    tasreehVerified: 'اجازت نامہ تصدیق ہو گیا',
+    tasreehRejected: 'اجازت نامہ نہیں ملا',
+    tasreehUnavailable: 'TASREEH سروس عارضی طور پر دستیاب نہیں ہے'
   }
 };
 

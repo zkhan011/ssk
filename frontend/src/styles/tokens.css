@@ -203,3 +203,59 @@ button, input, select, textarea { font: inherit; }
   .otp-row { gap: 8px; }
   .otp-box:nth-child(4) { margin-inline-end: 12px; }
 }
+
+/* Third screen: Tasreeh verification loading */
+.figma-hero { background: var(--screen-hero-background, linear-gradient(126deg, #ff224f 0%, #ff4662 42%, #ff8a91 100%)); }
+.world-map { background: var(--screen-body-background, none); }
+.tasreeh-body { display: grid; grid-template-rows: 42px auto auto 1fr; justify-items: center; padding: 0 56px; }
+.tasreeh-body h2 {
+  position: relative;
+  z-index: 1;
+  margin: 74px 0 22px;
+  max-width: 280px;
+  color: #07070b;
+  font-size: 19px;
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: -.25px;
+  white-space: pre-line;
+}
+.tasreeh-status {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 28px;
+  color: #20202a;
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 500;
+}
+.tasreeh-loader { position: relative; z-index: 1; width: 245px; height: 245px; display: grid; place-items: center; }
+.loader-ring {
+  position: absolute;
+  width: 205px;
+  height: 205px;
+  border: 5px solid #201653;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: tasreeh-spin 1.25s linear infinite;
+}
+.loader-ring::before,
+.loader-ring::after {
+  content: "";
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-style: solid;
+  border-color: #201653;
+  transform: rotate(45deg);
+}
+.loader-ring::before { left: -8px; top: 74px; border-width: 0 0 5px 5px; }
+.loader-ring::after { right: -8px; bottom: 74px; border-width: 5px 5px 0 0; }
+.loader-check { color: rgba(104, 226, 190, .42); font-size: 112px; font-weight: 900; transform: rotate(-5deg); }
+@keyframes tasreeh-spin { to { transform: rotate(360deg); } }
+@media (max-width: 560px) {
+  .tasreeh-body { padding-inline: 20px; }
+  .tasreeh-body h2 { margin-top: 50px; }
+  .tasreeh-loader { transform: scale(.82); }
+}
