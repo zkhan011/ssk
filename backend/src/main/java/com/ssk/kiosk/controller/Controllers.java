@@ -88,6 +88,28 @@ class ApiController {
         "checkedAt", Instant.now().toString());
   }
 
+  @PostMapping("/pangu/verify")
+  Object panguVerify(@RequestBody Map<String, String> request) {
+    String gatePassId = request.getOrDefault("gatePassId", "");
+    boolean registered = gatePassId.endsWith("7");
+    return Map.of(
+        "registered", registered,
+        "reference", gatePassId,
+        "provider", "PANGU",
+        "checkedAt", Instant.now().toString());
+  }
+
+  @PostMapping("/pangu/register")
+  Object panguRegister(@RequestBody Map<String, Object> request) {
+    Object gatePassId = request.getOrDefault("gatePassId", "");
+    return Map.of(
+        "registered", true,
+        "reference", String.valueOf(gatePassId),
+        "provider", "PANGU",
+        "registeredAt", Instant.now().toString());
+  }
+
+
   @GetMapping("/admin/dashboard")
   Object dashboard() {
     return Map.of(
