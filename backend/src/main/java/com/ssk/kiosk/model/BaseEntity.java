@@ -1,0 +1,1 @@
+package com.ssk.kiosk.model;import jakarta.persistence.*;import lombok.*;import java.time.*;import java.util.*;@MappedSuperclass @Getter @Setter public abstract class BaseEntity{@Id UUID id=UUID.randomUUID();Instant createdAt=Instant.now();Instant updatedAt=Instant.now();@Version Long version;boolean deleted=false;}

@@ -1,0 +1,1 @@
+package com.ssk.kiosk.repo;import com.ssk.kiosk.model.VisitApplication;import org.springframework.data.jpa.repository.*;import java.util.*;public interface VisitApplicationRepository extends JpaRepository<VisitApplication,UUID>{Optional<VisitApplication> findByApplicationNumber(String n);Optional<VisitApplication> findByQrToken(String t);}

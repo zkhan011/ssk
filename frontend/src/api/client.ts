@@ -1,0 +1,1 @@
+import axios from 'axios';export const api=axios.create({baseURL:import.meta.env.VITE_API_URL??'http://localhost:8080/api/v1'});export type AppReq={fullName:string;categoryCode:string;documentType:string;documentNumber:string;companyName?:string;hostEmployeeId:string;visitPurpose:string;locationName:string;gateName:string;validFrom:string;validUntil:string;photoPath?:string};
