@@ -297,3 +297,5 @@ button, input, select, textarea { font: inherit; }
   .access-check { width: 164px; height: 164px; font-size: 104px; }
   .gate-pass-card { width: min(320px, 100%); }
 }
+.figma-welcome{width:min(var(--appearance-content-width,540px),100vw);background:var(--appearance-background,#f7f7f8);font-size:calc(1rem * var(--appearance-font-scale,1))}.figma-hero{min-height:var(--appearance-header-height,0px)}
+.appearance{max-width:1200px}.appearance-grid{display:grid;grid-template-columns:minmax(280px,1fr) minmax(320px,1fr);gap:24px}.appearance-form{display:grid;gap:14px;padding:24px;background:#fff;border-radius:18px}.appearance-form label{display:grid;gap:6px;font-weight:700}.appearance-form input{padding:10px;border:1px solid #cbd5e1;border-radius:8px}.appearance-preview{overflow:hidden;border:1px solid #cbd5e1;border-radius:18px;background:var(--appearance-background);min-height:480px}.appearance-preview header{display:grid;place-items:center;background:linear-gradient(120deg,#ff204c,#ff8992);color:#fff}.appearance-preview main{padding:32px}@media(max-width:800px){.appearance-grid{grid-template-columns:1fr}}
