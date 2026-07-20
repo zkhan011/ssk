@@ -1,0 +1,1 @@
+package com.ssk.kiosk.dto;import java.time.*;import java.util.*;public record ApplicationResponse(UUID id,String applicationNumber,String passNumber,String qrToken,String fullName,String status,String maskedDocumentNumber,Instant validFrom,Instant validUntil){}
