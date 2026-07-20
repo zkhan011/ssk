@@ -1,0 +1,1 @@
+package com.ssk.kiosk.model;import jakarta.persistence.*;import lombok.*;@Entity @Getter @Setter @NoArgsConstructor public class Host extends BaseEntity{String employeeId;String fullName;String department;String email;String phone;}
