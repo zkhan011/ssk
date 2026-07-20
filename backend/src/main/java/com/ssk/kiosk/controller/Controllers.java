@@ -1,5 +1,6 @@
 package com.ssk.kiosk.controller;
 
+import com.ssk.kiosk.appearance.AppearanceService;
 import com.ssk.kiosk.dto.ApplicationRequest;
 import com.ssk.kiosk.dto.ApplicationResponse;
 import com.ssk.kiosk.dto.CategoryDto;
@@ -35,6 +36,25 @@ class ApiController {
   private final VisitApplicationRepository apps;
   private final AuditLogRepository audits;
   private final GatePassService service;
+  private final AppearanceService appearanceService;
+
+  @GetMapping("/appearance/published")
+  Map<String, Object> publishedAppearance() { return appearanceService.published(); }
+
+  @GetMapping("/appearance/defaults")
+  Map<String, Object> defaultAppearance() { return appearanceService.defaults(); }
+
+  @GetMapping("/admin/appearance/draft")
+  Map<String, Object> appearanceDraft() { return appearanceService.draft(); }
+
+  @PostMapping("/admin/appearance/draft")
+  Map<String, Object> saveAppearanceDraft(@RequestBody Map<String, Object> snapshot) { return appearanceService.saveDraft(snapshot, "admin"); }
+
+  @PostMapping("/admin/appearance/publish")
+  Map<String, Object> publishAppearance() { return appearanceService.publish("admin"); }
+
+  @GetMapping("/admin/appearance/history")
+  Object appearanceHistory() { return appearanceService.history(); }
 
   @PostMapping("/kiosk/sessions")
   Map<String, Object> session() {
