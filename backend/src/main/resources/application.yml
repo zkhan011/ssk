@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/kiosk}
-    username: ${SPRING_DATASOURCE_USERNAME:kiosk}
-    password: ${SPRING_DATASOURCE_PASSWORD:kiosk}
+    url: ${SPRING_DATASOURCE_URL:jdbc:sqlserver://localhost:1433;databaseName=kiosk;encrypt=true;trustServerCertificate=true}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:ChangeThis_DevelopmentPassword1}
   jpa:
     hibernate.ddl-auto: validate
     properties.hibernate.jdbc.time_zone: UTC

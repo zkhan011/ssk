@@ -5,7 +5,7 @@ Production-oriented monorepo for a Java 21 Spring Boot backend and React/TypeScr
 ## Structure
 
 ```text
-backend/      Spring Boot 3, JPA, Flyway, PostgreSQL, OpenAPI
+backend/      Spring Boot 3, JPA, Flyway, SQL Server, OpenAPI
 frontend/     React, TypeScript, Vite, TanStack Query, QR generation
 docs/         Architecture, ERD, API, deployment and operations guides
 deployment/   Nginx and environment templates
@@ -19,11 +19,11 @@ Development seed data includes host employees `E1001` and `E1002`. Production mu
 ## Exact commands
 
 ```bash
-# 1. Start PostgreSQL
-docker compose up -d postgres
+# 1. Start SQL Server
+docker compose up -d sqlserver
 
 # 2. Run database migrations
-cd backend && mvn flyway:migrate -Dflyway.url=jdbc:postgresql://localhost:5432/kiosk -Dflyway.user=kiosk -Dflyway.password=kiosk
+cd backend && mvn flyway:migrate -Dflyway.url=jdbc:sqlserver://localhost:1433;databaseName=kiosk;encrypt=true;trustServerCertificate=true -Dflyway.user=sa -Dflyway.password=ChangeThis_DevelopmentPassword1
 
 # 3. Start Spring Boot backend
 cd backend && mvn spring-boot:run
