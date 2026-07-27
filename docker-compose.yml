@@ -1,0 +1,22 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-ChangeThis_DevelopmentPassword1}
+      MSSQL_PID: Developer
+    ports: ["1433:1433"]
+    volumes: [sqlserver-data:/var/opt/mssql]
+  backend:
+    build: ./backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://sqlserver:1433;databaseName=kiosk;encrypt=true;trustServerCertificate=true
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: ${MSSQL_SA_PASSWORD:-ChangeThis_DevelopmentPassword1}
+    ports: ["8080:8080"]
+    depends_on: [sqlserver]
+  frontend:
+    build: ./frontend
+    ports: ["3000:80"]
+    depends_on: [backend]
+volumes: {sqlserver-data: {}}
