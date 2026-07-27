@@ -161,36 +161,8 @@ button, input, select, textarea { font: inherit; }
   line-height: 1.45;
 }
 .gate-pass-form { position: relative; z-index: 1; display: grid; justify-items: center; }
-.otp-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 22px; direction: ltr; }
-.otp-box {
-  width: 33px;
-  height: 33px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #1e1e25;
-  border-radius: 4px;
-  background: #fff;
-  color: #0a0a0d;
-  font-size: 20px;
-  font-weight: 900;
-}
-.otp-box:nth-child(4) { margin-inline-end: 20px; }
 .scan-qr-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 17px; min-height: 40px; color: #15151b; font-size: 9px; font-weight: 900; }
 .qr-scan-button { width: 40px; height: 40px; border: 0; border-radius: 5px; background: #10d99b; color: #111; font-size: 24px; line-height: 1; cursor: pointer; }
-.number-pad { display: grid; grid-template-columns: repeat(3, 80px); gap: 24px 31px; margin-bottom: 24px; direction: ltr; }
-.number-pad button {
-  height: 60px;
-  border: 1px solid #5f5f67;
-  border-radius: 4px;
-  background: #fff;
-  color: #000;
-  font-size: 35px;
-  line-height: 1;
-  font-weight: 950;
-  cursor: pointer;
-}
-.number-pad button:active { transform: translateY(1px); background: #f1f1f4; }
-.number-pad .pad-action { font-size: 13px; font-weight: 950; }
 .validate-button { min-width: 264px; margin-top: 0; }
 .validation-error { margin: -12px 0 10px; color: #ad1233; font-size: 12px; font-weight: 800; }
 .validation-card { margin-top: 12px; padding: 10px 18px; border-radius: 8px; background: #fff; box-shadow: 0 8px 20px #0001; }
@@ -198,10 +170,7 @@ button, input, select, textarea { font: inherit; }
 
 @media (max-width: 560px) {
   .gate-pass-screen .figma-body { padding-inline: 20px; }
-  .number-pad { grid-template-columns: repeat(3, 74px); gap: 16px; }
   .stepper { gap: 7px; font-size: 9px; }
-  .otp-row { gap: 8px; }
-  .otp-box:nth-child(4) { margin-inline-end: 12px; }
 }
 
 /* Third screen: Tasreeh verification loading */
@@ -299,3 +268,11 @@ button, input, select, textarea { font: inherit; }
 }
 .figma-welcome{width:min(var(--appearance-content-width,540px),100vw);background:var(--appearance-background,#f7f7f8);font-size:calc(1rem * var(--appearance-font-scale,1))}.figma-hero{min-height:var(--appearance-header-height,0px)}
 .appearance{max-width:1200px}.appearance-grid{display:grid;grid-template-columns:minmax(280px,1fr) minmax(320px,1fr);gap:24px}.appearance-form{display:grid;gap:14px;padding:24px;background:#fff;border-radius:18px}.appearance-form label{display:grid;gap:6px;font-weight:700}.appearance-form input{padding:10px;border:1px solid #cbd5e1;border-radius:8px}.appearance-preview{overflow:hidden;border:1px solid #cbd5e1;border-radius:18px;background:var(--appearance-background);min-height:480px}.appearance-preview header{display:grid;place-items:center;background:linear-gradient(120deg,#ff204c,#ff8992);color:#fff}.appearance-preview main{padding:32px}@media(max-width:800px){.appearance-grid{grid-template-columns:1fr}}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.gate-pass-input-label{width:min(366px,100%);display:block;margin-bottom:10px}
+.gate-pass-input{width:100%;min-height:58px;padding:12px 18px;border:2px solid #2c2855;border-radius:8px;background:#fff;color:#111322;font-size:22px;font-weight:800;letter-spacing:.04em;text-align:center;direction:ltr;box-shadow:0 8px 20px #21165312}
+.gate-pass-input::placeholder{color:#8a8b96;font-size:15px;font-weight:600;letter-spacing:0}
+.gate-pass-input:focus{outline:3px solid #6ee3bb;outline-offset:3px}
+.gate-pass-input[aria-invalid=true]{border-color:#ad1233}
+.clear-pass-button{margin:0 0 18px;border:0;background:transparent;color:#32276f;font-size:11px;font-weight:900;text-decoration:underline;cursor:pointer}
+.clear-pass-button:disabled{opacity:.4;cursor:not-allowed}

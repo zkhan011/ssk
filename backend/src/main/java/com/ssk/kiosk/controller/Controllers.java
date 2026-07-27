@@ -102,7 +102,7 @@ class ApiController {
   Object tasreeh(@RequestBody Map<String, String> request) {
     String gatePassId = request.getOrDefault("gatePassId", "");
     return Map.of(
-        "authorised", gatePassId.matches("\\d{8}"),
+        "authorised", !gatePassId.isBlank() && gatePassId.length() <= 64,
         "reference", gatePassId,
         "provider", "TASREEH",
         "checkedAt", Instant.now().toString());
