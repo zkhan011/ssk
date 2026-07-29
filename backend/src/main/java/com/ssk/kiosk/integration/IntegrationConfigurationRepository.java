@@ -1,0 +1,1 @@
+package com.ssk.kiosk.integration;import org.springframework.data.jpa.repository.JpaRepository;public interface IntegrationConfigurationRepository extends JpaRepository<IntegrationConfiguration,String>{}
