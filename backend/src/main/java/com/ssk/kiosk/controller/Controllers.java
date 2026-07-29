@@ -8,6 +8,8 @@ import com.ssk.kiosk.dto.CheckRequest;
 import com.ssk.kiosk.dto.HostDto;
 import com.ssk.kiosk.dto.ValidateRequest;
 import com.ssk.kiosk.dto.ValidationResponse;
+import com.ssk.kiosk.model.ApplicationStatus;
+import com.ssk.kiosk.model.VisitApplication;
 import com.ssk.kiosk.repo.AuditLogRepository;
 import com.ssk.kiosk.repo.HostRepository;
 import com.ssk.kiosk.repo.VisitApplicationRepository;
@@ -18,7 +20,12 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -139,10 +146,48 @@ class ApiController {
         "recentActivities", audits.findAll(PageRequest.of(0, 10)).getContent());
   }
 
-  @GetMapping("/admin/applications")
-  Object list() {
-    return apps.findAll().map(GatePassService::map);
+  @GetMapping("/admin/registrations")
+  Object registrations(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size,
+      @RequestParam(defaultValue = "createdAt") String sort,
+      @RequestParam(defaultValue = "DESC") Sort.Direction direction,
+      @RequestParam(defaultValue = "") String search,
+      @RequestParam(required = false) ApplicationStatus status) {
+    int safeSize = Math.min(Math.max(size, 1), 100);
+    String safeSort = switch (sort) { case "applicationNumber", "fullName", "status", "validFrom", "validUntil" -> sort; default -> "createdAt"; };
+    PageRequest request = PageRequest.of(Math.max(page, 0), safeSize, Sort.by(direction, safeSort));
+    Page<VisitApplication> result = status != null ? apps.findByStatus(status, request)
+        : !search.isBlank() ? apps.findByFullNameContainingIgnoreCase(search.trim(), request)
+        : apps.findAll(request);
+    return result.map(GatePassService::map);
   }
+
+  @GetMapping("/admin/reports/summary")
+  Object reportSummary() {
+    return Map.of(
+        "total", apps.count(),
+        "approved", apps.countByStatus(ApplicationStatus.APPROVED),
+        "pending", apps.countByStatus(ApplicationStatus.PENDING_HOST_APPROVAL) + apps.countByStatus(ApplicationStatus.PENDING_SECURITY_APPROVAL),
+        "checkedIn", apps.countByStatus(ApplicationStatus.CHECKED_IN),
+        "rejected", apps.countByStatus(ApplicationStatus.REJECTED));
+  }
+
+  @GetMapping(value = "/admin/registrations/export", produces = "text/csv")
+  ResponseEntity<String> exportRegistrations() {
+    StringBuilder csv = new StringBuilder("applicationNumber,visitorName,status,maskedDocumentNumber,validFrom,validUntil\n");
+    apps.findAll(PageRequest.of(0, 1000, Sort.by(Sort.Direction.DESC, "createdAt"))).forEach(a -> csv
+        .append(a.getApplicationNumber()).append(',').append(csv(a.getFullName())).append(',')
+        .append(a.getStatus()).append(',').append(a.getMaskedDocumentNumber()).append(',')
+        .append(a.getValidFrom()).append(',').append(a.getValidUntil()).append('\n'));
+    return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=registrations.csv")
+        .contentType(new MediaType("text", "csv")).body(csv.toString());
+  }
+
+  private String csv(String value) { return "\"" + (value == null ? "" : value.replace("\"", "\"\"")) + "\""; }
+
+  @GetMapping("/admin/applications")
+  Object list() { return apps.findAll().map(GatePassService::map); }
 
   @GetMapping("/applications/{id}")
   ApplicationResponse get(@PathVariable UUID id) {
