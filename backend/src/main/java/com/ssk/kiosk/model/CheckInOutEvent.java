@@ -1,0 +1,1 @@
+package com.ssk.kiosk.model;import jakarta.persistence.*;import lombok.*;import java.util.*;@Entity @Getter @Setter @NoArgsConstructor public class CheckInOutEvent extends BaseEntity{UUID passId;String eventType;String gateName;String terminal;String remarks;}
