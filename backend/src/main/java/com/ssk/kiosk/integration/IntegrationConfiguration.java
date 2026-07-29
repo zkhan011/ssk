@@ -1,0 +1,6 @@
+package com.ssk.kiosk.integration;
+import jakarta.persistence.*;import java.time.Instant;
+@Entity public class IntegrationConfiguration {
+ @Id private String integrationKey; private boolean enabled; private String baseUrl; private int connectTimeoutMs; private int readTimeoutMs; private int retryCount; private Instant updatedAt; private String updatedBy; @Version private Long rowVersion;
+ public String getIntegrationKey(){return integrationKey;} public void setIntegrationKey(String v){integrationKey=v;} public boolean isEnabled(){return enabled;} public void setEnabled(boolean v){enabled=v;} public String getBaseUrl(){return baseUrl;} public void setBaseUrl(String v){baseUrl=v;} public int getConnectTimeoutMs(){return connectTimeoutMs;} public void setConnectTimeoutMs(int v){connectTimeoutMs=v;} public int getReadTimeoutMs(){return readTimeoutMs;} public void setReadTimeoutMs(int v){readTimeoutMs=v;} public int getRetryCount(){return retryCount;} public void setRetryCount(int v){retryCount=v;} public Instant getUpdatedAt(){return updatedAt;} public void setUpdatedAt(Instant v){updatedAt=v;} public String getUpdatedBy(){return updatedBy;} public void setUpdatedBy(String v){updatedBy=v;}
+}
