@@ -197,10 +197,17 @@ class ApiController {
   private String csv(String value) { return "\"" + (value == null ? "" : value.replace("\"", "\"\"")) + "\""; }
 
   @GetMapping("/admin/applications")
-  Object list() { return apps.findAll().map(GatePassService::map); }
+  Object list() {
+    return apps.findAll()
+        .stream()
+        .map(GatePassService::map)
+        .toList();
+  }
 
   @GetMapping("/applications/{id}")
   ApplicationResponse get(@PathVariable UUID id) {
-    return apps.findById(id).map(GatePassService::map).orElseThrow();
+    return apps.findById(id)
+        .map(GatePassService::map)
+        .orElseThrow();
   }
 }
