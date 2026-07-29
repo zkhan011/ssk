@@ -8,6 +8,7 @@ import com.ssk.kiosk.dto.CheckRequest;
 import com.ssk.kiosk.dto.HostDto;
 import com.ssk.kiosk.dto.ValidateRequest;
 import com.ssk.kiosk.dto.ValidationResponse;
+import com.ssk.kiosk.integration.IntegrationConfigurationService;
 import com.ssk.kiosk.model.ApplicationStatus;
 import com.ssk.kiosk.model.VisitApplication;
 import com.ssk.kiosk.repo.AuditLogRepository;
@@ -44,6 +45,15 @@ class ApiController {
   private final AuditLogRepository audits;
   private final GatePassService service;
   private final AppearanceService appearanceService;
+  private final IntegrationConfigurationService integrationConfigurationService;
+
+  @GetMapping("/admin/integrations")
+  Object integrations() { return integrationConfigurationService.all(); }
+
+  @PostMapping("/admin/integrations/{key}")
+  Object updateIntegration(@PathVariable String key, @RequestBody Map<String, Object> values) {
+    return integrationConfigurationService.update(key, values, "admin");
+  }
 
   @GetMapping("/appearance/published")
   Map<String, Object> publishedAppearance() { return appearanceService.published(); }
