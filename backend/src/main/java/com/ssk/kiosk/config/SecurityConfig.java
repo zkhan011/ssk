@@ -1,5 +1,7 @@
 package com.ssk.kiosk.config;
 
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +55,7 @@ class SecurityConfig {
   @Bean
   SecurityFilterChain security(HttpSecurity http) throws Exception {
     return http.csrf(csrf -> csrf.disable())
-        .cors(Customizer.withDefaults())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/v1/admin/**", "/api/v1/applications/**", "/api/v1/passes/*/check-in", "/api/v1/passes/*/check-out").hasRole("ADMIN")
             .anyRequest().permitAll())
