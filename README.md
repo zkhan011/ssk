@@ -54,3 +54,8 @@ cd backend && mvn clean package && cd ../frontend && npm install && npm run buil
 ## API documentation
 
 Run the backend and open `http://localhost:8080/swagger-ui.html`.
+## Runtime configuration added for kiosk administration
+
+Set `CORS_ALLOWED_ORIGINS` to the comma-separated browser origins permitted to call the backend (defaults to the two Vite origins on `localhost` and `127.0.0.1`). Set `APPEARANCE_MEDIA_DIRECTORY` to a persistent, writable directory and optionally change `APPEARANCE_MEDIA_MAX_BYTES` from its 5 MiB default. Tasreeh and Pangu base URLs and response mappings are managed from `/admin/integrations`; the browser never receives integration credentials or raw provider responses.
+
+The live kiosk submits variable-length alphanumeric pass IDs to `POST /api/v1/verification/gate-pass`. The backend always invokes both configured providers and only returns `APPROVED` when both approve.

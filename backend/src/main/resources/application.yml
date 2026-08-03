@@ -7,9 +7,18 @@ spring:
     hibernate.ddl-auto: validate
     properties.hibernate.jdbc.time_zone: UTC
   flyway.enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 app:
   jwt-secret: ${APP_JWT_SECRET:dev-change-me-32-byte-secret-key}
   kiosk-timeout-seconds: ${KIOSK_TIMEOUT_SECONDS:180}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
+  media:
+    directory: ${APPEARANCE_MEDIA_DIRECTORY:./data/uploads}
+    max-bytes: ${APPEARANCE_MEDIA_MAX_BYTES:5242880}
   admin:
     username: ${ADMIN_USERNAME:admin}
     password: ${ADMIN_PASSWORD:ChangeThis_AdminPassword1}

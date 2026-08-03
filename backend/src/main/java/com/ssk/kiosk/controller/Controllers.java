@@ -1,6 +1,7 @@
 package com.ssk.kiosk.controller;
 
 import com.ssk.kiosk.appearance.AppearanceService;
+import com.ssk.kiosk.appearance.AppearanceMediaService;
 import com.ssk.kiosk.dto.ApplicationRequest;
 import com.ssk.kiosk.dto.ApplicationResponse;
 import com.ssk.kiosk.dto.CategoryDto;
@@ -9,6 +10,8 @@ import com.ssk.kiosk.dto.HostDto;
 import com.ssk.kiosk.dto.ValidateRequest;
 import com.ssk.kiosk.dto.ValidationResponse;
 import com.ssk.kiosk.integration.IntegrationConfigurationService;
+import com.ssk.kiosk.integration.GatePassVerificationResponse;
+import com.ssk.kiosk.integration.GatePassVerificationService;
 import com.ssk.kiosk.model.ApplicationStatus;
 import com.ssk.kiosk.model.VisitApplication;
 import com.ssk.kiosk.repo.AuditLogRepository;
@@ -34,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -45,7 +50,9 @@ class ApiController {
   private final AuditLogRepository audits;
   private final GatePassService service;
   private final AppearanceService appearanceService;
+  private final AppearanceMediaService appearanceMediaService;
   private final IntegrationConfigurationService integrationConfigurationService;
+  private final GatePassVerificationService gatePassVerificationService;
 
   @GetMapping("/admin/integrations")
   Object integrations() { return integrationConfigurationService.all(); }
@@ -72,6 +79,11 @@ class ApiController {
 
   @GetMapping("/admin/appearance/history")
   Object appearanceHistory() { return appearanceService.history(); }
+
+  @PostMapping(value = "/admin/appearance/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  Object uploadAppearanceMedia(@RequestPart("file") MultipartFile file) throws Exception {
+    return appearanceMediaService.store(file, "admin");
+  }
 
   @PostMapping("/kiosk/sessions")
   Map<String, Object> session() {
@@ -103,6 +115,11 @@ class ApiController {
   @PostMapping("/passes/validate")
   ValidationResponse validate(@Valid @RequestBody ValidateRequest request) {
     return service.validate(request);
+  }
+
+  @PostMapping("/verification/gate-pass")
+  GatePassVerificationResponse verifyGatePass(@RequestBody Map<String, String> request) {
+    return gatePassVerificationService.verify(request.get("gatePassId"), request.get("kioskId"));
   }
 
   @PostMapping("/passes/{id}/check-in")

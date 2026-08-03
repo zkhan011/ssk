@@ -38,3 +38,12 @@ create table integration_configuration (
 );
 insert into integration_configuration(integration_key,enabled,connect_timeout_ms,read_timeout_ms,retry_count) values ('TASREEH',1,5000,15000,2),('PANGU',1,5000,15000,2);
 GO
+-- Apply the versioned Flyway scripts in backend/src/main/resources/db/migration in production.
+-- The following tables mirror V5 and V6 for manual SQL Server provisioning.
+if col_length('integration_configuration','verification_path') is null alter table integration_configuration add verification_path varchar(300);
+if col_length('integration_configuration','approval_field') is null alter table integration_configuration add approval_field varchar(200);
+if col_length('integration_configuration','approval_value') is null alter table integration_configuration add approval_value varchar(100);
+if object_id('verification_execution_log', 'U') is null
+create table verification_execution_log(id uniqueidentifier primary key,correlation_id varchar(64) not null,gate_pass_hash varchar(64) not null,integration_key varchar(40) not null,outcome varchar(40) not null,http_status int,duration_ms bigint not null,created_at datetime2 not null default SYSUTCDATETIME());
+if object_id('appearance_media', 'U') is null
+create table appearance_media(id uniqueidentifier primary key,stored_name varchar(100) not null unique,content_type varchar(50) not null,size_bytes bigint not null,checksum varchar(64) not null,created_at datetime2 not null default SYSUTCDATETIME(),created_by varchar(100) not null,row_version bigint);
