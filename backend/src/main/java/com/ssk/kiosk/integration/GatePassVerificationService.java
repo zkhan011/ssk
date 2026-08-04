@@ -1,7 +1,6 @@
 package com.ssk.kiosk.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,18 +10,18 @@ import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 import java.util.UUID;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 @Service
 public class GatePassVerificationService {
   private final IntegrationConfigurationService configurations;
   private final VerificationExecutionLogRepository logs;
+  private final IntegrationWorkflowExecutor workflowExecutor;
 
-  public GatePassVerificationService(IntegrationConfigurationService configurations, VerificationExecutionLogRepository logs) {
+  public GatePassVerificationService(IntegrationConfigurationService configurations, VerificationExecutionLogRepository logs, IntegrationWorkflowExecutor workflowExecutor) {
     this.configurations = configurations;
     this.logs = logs;
+    this.workflowExecutor = workflowExecutor;
   }
 
   public GatePassVerificationResponse verify(String gatePassId, String kioskId) {
@@ -57,25 +56,14 @@ public class GatePassVerificationService {
     if (!config.isEnabled() || config.getBaseUrl() == null || config.getBaseUrl().isBlank()) {
       return failed(key, gatePassId, "CONFIGURATION_ERROR", "Integration is not available");
     }
-    org.springframework.http.client.JdkClientHttpRequestFactory requestFactory =
-        new org.springframework.http.client.JdkClientHttpRequestFactory(
-            java.net.http.HttpClient.newBuilder().connectTimeout(Duration.ofMillis(config.getConnectTimeoutMs())).build());
-    requestFactory.setReadTimeout(Duration.ofMillis(config.getReadTimeoutMs()));
-    RestClient client = RestClient.builder()
-        .baseUrl(config.getBaseUrl())
-        .requestFactory(requestFactory)
-        .build();
     JsonNode response = null;
     Integer httpStatus = null;
     RuntimeException lastFailure = null;
     for (int attempt = 0; attempt <= config.getRetryCount(); attempt++) {
       try {
-        var entity = client.post().uri(config.getVerificationPath())
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(Map.of("gatePassId", gatePassId, "kioskId", kioskId == null ? "" : kioskId))
-            .retrieve().toEntity(JsonNode.class);
-        response = entity.getBody();
-        httpStatus = entity.getStatusCode().value();
+        IntegrationWorkflowExecutor.Execution execution = workflowExecutor.execute(config, gatePassId, kioskId);
+        response = execution.response();
+        httpStatus = execution.httpStatus();
         break;
       } catch (RuntimeException exception) {
         lastFailure = exception;
@@ -83,7 +71,9 @@ public class GatePassVerificationService {
     }
     if (response == null) throw lastFailure == null ? new IllegalStateException("Empty integration response") : lastFailure;
     JsonNode approvalNode = resolve(response, config.getApprovalField());
-    boolean approved = approvalNode != null && config.getApprovalValue().equalsIgnoreCase(approvalNode.asText());
+    boolean approved = "$httpStatus".equals(config.getApprovalField())
+        ? config.getApprovalValue().equals(String.valueOf(httpStatus))
+        : approvalNode != null && config.getApprovalValue().equalsIgnoreCase(approvalNode.asText());
     String outcome = approved ? "APPROVED" : "REJECTED";
     recordExecution(correlationId, gatePassId, key, outcome, httpStatus, started);
     return new NormalizedVerificationResult(key, approved, outcome,

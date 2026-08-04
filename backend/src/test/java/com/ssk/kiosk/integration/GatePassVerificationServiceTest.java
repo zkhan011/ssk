@@ -31,6 +31,7 @@ class GatePassVerificationServiceTest {
     configurations = Mockito.mock(IntegrationConfigurationService.class);
     when(configurations.required("TASREEH")).thenReturn(configuration("/tasreeh"));
     when(configurations.required("PANGU")).thenReturn(configuration("/pangu"));
+    when(configurations.workflow(org.mockito.ArgumentMatchers.any())).thenAnswer(invocation -> { IntegrationConfiguration c=invocation.getArgument(0); return java.util.List.of(java.util.Map.of("id","verify","method","POST","path",c.getVerificationPath(),"body",java.util.Map.of("gatePassId","{{input.gatePassId}}"),"successStatusCodes",java.util.List.of(200),"outputs",java.util.Map.of())); });
   }
 
   @AfterEach void stopServer() { server.stop(0); }
@@ -38,7 +39,7 @@ class GatePassVerificationServiceTest {
   @Test
   void requiresApprovalFromBothIntegrations() {
     GatePassVerificationResponse result = new GatePassVerificationService(configurations,
-        mock(VerificationExecutionLogRepository.class)).verify("ABC-123", "KIOSK-1");
+        mock(VerificationExecutionLogRepository.class), new IntegrationWorkflowExecutor(configurations, new com.fasterxml.jackson.databind.ObjectMapper(), new org.springframework.mock.env.MockEnvironment())).verify("ABC-123", "KIOSK-1");
     assertEquals("REJECTED", result.outcome());
     assertEquals(1, tasreehCalls.get());
     assertEquals(1, panguCalls.get());

@@ -8,3 +8,5 @@ All APIs are under `/api/v1`. Main endpoints include kiosk sessions, configurabl
 * `GET|POST /api/v1/admin/appearance/**` requires the administrator role. Media uploads use `multipart/form-data` with a `file` part.
 * `GET|POST /api/v1/admin/integrations/**` requires the administrator role. Stale `rowVersion` updates return HTTP 409.
 * `GET /uploads/appearance/{id}` serves validated appearance media and does not expose filesystem paths.
+* `GET /api/v1/screen-flow/published` returns the active kiosk route order and destinations.
+* `GET|POST /api/v1/admin/screen-flow/**` loads, validates, saves, and publishes the protected flow draft.

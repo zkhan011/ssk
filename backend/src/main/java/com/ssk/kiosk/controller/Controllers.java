@@ -12,6 +12,7 @@ import com.ssk.kiosk.dto.ValidationResponse;
 import com.ssk.kiosk.integration.IntegrationConfigurationService;
 import com.ssk.kiosk.integration.GatePassVerificationResponse;
 import com.ssk.kiosk.integration.GatePassVerificationService;
+import com.ssk.kiosk.flow.ScreenFlowService;
 import com.ssk.kiosk.model.ApplicationStatus;
 import com.ssk.kiosk.model.VisitApplication;
 import com.ssk.kiosk.repo.AuditLogRepository;
@@ -53,6 +54,19 @@ class ApiController {
   private final AppearanceMediaService appearanceMediaService;
   private final IntegrationConfigurationService integrationConfigurationService;
   private final GatePassVerificationService gatePassVerificationService;
+  private final ScreenFlowService screenFlowService;
+
+  @GetMapping("/screen-flow/published")
+  Map<String,Object> publishedScreenFlow(){return screenFlowService.published();}
+
+  @GetMapping("/admin/screen-flow/draft")
+  Map<String,Object> screenFlowDraft(){return screenFlowService.draft();}
+
+  @PostMapping("/admin/screen-flow/draft")
+  Map<String,Object> saveScreenFlowDraft(@RequestBody Map<String,Object> value){return screenFlowService.saveDraft(value,"admin");}
+
+  @PostMapping("/admin/screen-flow/publish")
+  Map<String,Object> publishScreenFlow(){return screenFlowService.publish("admin");}
 
   @GetMapping("/admin/integrations")
   Object integrations() { return integrationConfigurationService.all(); }

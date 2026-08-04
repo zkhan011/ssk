@@ -12,3 +12,9 @@ The kiosk calls only `POST /api/v1/verification/gate-pass`. The backend executes
 Administrators configure each HTTPS base URL, verification path, nested approval response field, approval value, connection timeout, read timeout, and retry limit under **Tasreeh & Pangu APIs**. Response fields use restricted dot/index paths such as `data.approved` or `items[0].approved`; executable expressions are not accepted.
 
 `CORS_ALLOWED_ORIGINS` is a comma-separated allowlist. `APPEARANCE_MEDIA_DIRECTORY` controls persistent image storage and `APPEARANCE_MEDIA_MAX_BYTES` defaults to 5 MiB. Uploaded PNG, JPEG, WEBP, and sanitized SVG files receive generated names and checksum-based cache-busting URLs.
+
+## Ordered authentication and Employee Access Sync
+
+The Tasreeh editor accepts a restricted JSON workflow. A typical flow has an `authenticate` step that maps `accessToken` from its response, followed by an `employeeAccessSync` POST. The second step sets `Authorization` to `Bearer {{steps.authenticate.outputs.accessToken}}` and can include `{{input.gatePassId}}` in the configured pass payload. Environment-backed secret placeholders such as `{{secrets.TASREEH_USERNAME}}` and `{{secrets.TASREEH_PASSWORD}}` are resolved only by the backend and are never returned as values to the browser.
+
+Each step defines `id`, `method`, relative `path`, optional `headers`, JSON `body`, `successStatusCodes`, and response `outputs`. Supported methods are GET, POST, PUT, PATCH, and DELETE. Templates accept only `input`, `context`, prior `steps.*.outputs`, and uppercase `secrets` references; SpEL, scripts, file URLs, and arbitrary expressions are rejected. Use approval field `$httpStatus` with value `200` when the final Tasreeh contract defines success only by HTTP status.

@@ -5,3 +5,5 @@ Open `/login` and authenticate with the administrator credentials supplied throu
 The dashboard provides summary metrics, Appearance Settings, the controlled current Screen Flow, paginated Visitor Registrations, Reports, Roles and Permissions navigation, and Audit History navigation. Registration search is server-side, page sizes are capped at 100, sorting uses an allowlist, identity-document values remain masked, and CSV export is capped at 1,000 masked rows.
 
 Appearance settings retain the existing draft/publish model. The kiosk only reads `/api/v1/appearance/published`, uses bundled defaults while loading, and falls back safely when the endpoint is unavailable. Variable-length alphanumeric Gate Pass IDs remain limited to 64 characters.
+
+The **Screen Flow** page stores a server-side draft and published flow. Administrators may reorder known routes, enable optional routes, and choose start, success, and failure destinations. Gate Pass entry and verification routes cannot be disabled, and all destinations must reference enabled routes. New kiosk sessions fetch the published flow; existing sessions retain their current state.
