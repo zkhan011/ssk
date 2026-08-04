@@ -1,0 +1,4 @@
+# Appearance settings
+Published configuration precedence is screen-specific configuration, then the published global appearance snapshot, then built-in CSS defaults. The public endpoint is `GET /api/v1/appearance/published`; draft and publish endpoints are `/api/v1/admin/appearance/*`. Current persisted validation allows logo width 40-400px, header height 120-600px, content width 320-1920px, font scale 0.8-1.5, mobile breakpoints 320-1023px, and tablet breakpoints 768-1600px.
+
+Administrators can upload or remove the global logo, set its width, upload a different header image for every supported kiosk page, and choose a separate header background color for each page. Draft changes affect only the live preview until **Publish changes** is selected. Published image URLs include a checksum version to invalidate replaced browser caches.
