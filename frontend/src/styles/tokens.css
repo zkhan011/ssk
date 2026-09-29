@@ -66,7 +66,7 @@ button, input, select, textarea { font: inherit; }
 .hero-ribbons i:nth-child(10) { left: 88%; transform: rotate(-78deg); height: 190px; }
 .hero-ribbons i:nth-child(11) { left: 34%; transform: rotate(54deg); height: 170px; bottom: 26px; opacity: .84; }
 .hero-ribbons i:nth-child(12) { left: 61%; transform: rotate(-55deg); height: 166px; bottom: 16px; opacity: .84; }
-.figma-body { position: relative; text-align: center; padding: 82px 66px 0; overflow: hidden; }
+.figma-body { position: relative; text-align: center; padding: 82px 66px 0; overflow: hidden; color: var(--appearance-body-text-color,#06060a); background-color: var(--appearance-body-background-color,#f7f7f8); background-image: var(--appearance-body-background-image,none); background-size: var(--appearance-body-background-size,cover); background-position: var(--appearance-body-background-position,center); background-repeat: no-repeat; border-radius: var(--appearance-body-radius,0); }
 .world-map { position: absolute; inset: 36px -65px 0; opacity: .52; background:
     radial-gradient(ellipse at 18% 18%, #d9dadd 0 7%, transparent 7.4%),
     radial-gradient(ellipse at 34% 28%, #d9dadd 0 10%, transparent 10.4%),
@@ -286,3 +286,8 @@ button, input, select, textarea { font: inherit; }
 .appearance-form textarea{width:100%;font-family:ui-monospace,monospace;padding:10px;border:1px solid #cbd5e1;border-radius:8px}
 .flow-list button{min-width:40px}
 .kiosk .topbar{background:var(--appearance-header-color,#ff3158);color:#fff}
+.result-body { min-height: 520px; display: grid; align-content: center; justify-items: center; gap: 18px; padding: 48px; }
+.result-body h2 { margin: 0; font-size: clamp(28px, 5vw, 48px); }
+.result-body p { max-width: 440px; margin: 0; font-size: 18px; line-height: 1.5; }
+.result-symbol { width: 112px; height: 112px; display: grid; place-items: center; border-radius: 50%; background: #a40d2d; color: white; font-size: 78px; font-weight: 900; }
+.result-screen.error .result-symbol { background: #df7b00; }

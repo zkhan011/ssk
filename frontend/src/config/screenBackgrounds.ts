@@ -23,8 +23,8 @@ export const screenBackgrounds = {
 
 export type ScreenBackgroundKey = keyof typeof screenBackgrounds;
 
-export function screenBackgroundStyle(screen: ScreenBackgroundKey) {
-  const background = screenBackgrounds[screen];
+export function screenBackgroundStyle(screen: ScreenBackgroundKey|string) {
+  const background = screenBackgrounds[screen as ScreenBackgroundKey]??screenBackgrounds.welcome;
   return {
     '--screen-hero-background': background.hero,
     '--screen-body-background': background.body
