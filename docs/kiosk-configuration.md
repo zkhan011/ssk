@@ -19,3 +19,7 @@ cd android && gradle :app:assembleRelease
 ```
 
 The Android host app appends its configured identity to the shared URL; the web application then persists and reports it in the same way as a browser kiosk.
+
+## Camera fallback
+
+When Tasreeh verification succeeds but Pangu cannot register the image supplied by the integration workflow, the kiosk automatically opens the face-capture screen, starts the front camera, captures a JPEG, and retries Pangu registration. There is no extra in-application permission question. Browsers control camera permission themselves, so administrators must pre-grant camera access for the kiosk origin using managed-browser/OS policy; web code cannot bypass a browser permission prompt. The Android WebView grants video capture only to the configured kiosk origin, and the Android `CAMERA` runtime permission must be pre-granted by MDM/device-owner policy.

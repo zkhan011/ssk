@@ -174,10 +174,15 @@ class ApiController {
   @PostMapping("/pangu/register")
   Object panguRegister(@RequestBody Map<String, Object> request) {
     Object gatePassId = request.getOrDefault("gatePassId", "");
+    String faceImage = String.valueOf(request.getOrDefault("faceImage", ""));
+    if (faceImage.length() > 1_500_000 || !faceImage.matches("^data:image/jpeg;base64,[A-Za-z0-9+/]+={0,2}$")) {
+      throw new IllegalArgumentException("A JPEG camera capture is required");
+    }
     return Map.of(
         "registered", true,
         "reference", String.valueOf(gatePassId),
         "provider", "PANGU",
+        "source", "KIOSK_CAMERA",
         "registeredAt", Instant.now().toString());
   }
 
