@@ -15,6 +15,7 @@ class SecurityConfigTest {
         new MockHttpServletRequest("OPTIONS", "/api/v1/verification/gate-pass"));
     assertTrue(configuration.getAllowedOrigins().contains("http://127.0.0.1:5173"));
     assertTrue(configuration.getAllowedMethods().contains("OPTIONS"));
+    assertTrue(configuration.getAllowedHeaders().contains("X-Kiosk-Id"));
     assertEquals(Boolean.TRUE, configuration.getAllowCredentials());
   }
 }

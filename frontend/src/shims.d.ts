@@ -2,6 +2,7 @@ declare module 'react' {
   export const createContext: any;
   export const useContext: any;
   export const useEffect: any;
+  export const useRef: any;
   export const useState: any;
   export const Fragment: any;
   const React: any;
