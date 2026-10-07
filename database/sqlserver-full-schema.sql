@@ -43,10 +43,16 @@ GO
 if col_length('integration_configuration','verification_path') is null alter table integration_configuration add verification_path varchar(300);
 if col_length('integration_configuration','approval_field') is null alter table integration_configuration add approval_field varchar(200);
 if col_length('integration_configuration','approval_value') is null alter table integration_configuration add approval_value varchar(100);
-if object_id('verification_execution_log', 'U') is null
-create table verification_execution_log(id uniqueidentifier primary key,correlation_id varchar(64) not null,gate_pass_hash varchar(64) not null,integration_key varchar(40) not null,outcome varchar(40) not null,http_status int,duration_ms bigint not null,created_at datetime2 not null default SYSUTCDATETIME());
+if object_id('dbo.verification_execution_log', 'U') is null
+create table dbo.verification_execution_log(id uniqueidentifier primary key,correlation_id varchar(64) not null,gate_pass_hash varchar(64) not null,integration_key varchar(40) not null,outcome varchar(40) not null,http_status int,duration_ms bigint not null,created_at datetime2 not null default SYSUTCDATETIME());
+if not exists (select 1 from sys.indexes where name='idx_verification_log_created_at' and object_id=object_id('dbo.verification_execution_log'))
+create index idx_verification_log_created_at on dbo.verification_execution_log(created_at);
 if object_id('appearance_media', 'U') is null
 create table appearance_media(id uniqueidentifier primary key,stored_name varchar(100) not null unique,content_type varchar(50) not null,size_bytes bigint not null,checksum varchar(64) not null,created_at datetime2 not null default SYSUTCDATETIME(),created_by varchar(100) not null,row_version bigint);
 if object_id('screen_flow_configuration', 'U') is null create table screen_flow_configuration(id uniqueidentifier primary key,status varchar(20) not null,version_number bigint not null default 0,snapshot nvarchar(max) not null,created_at datetime2 not null default SYSUTCDATETIME(),published_at datetime2,changed_by varchar(100),row_version bigint);
 if col_length('integration_configuration','workflow_snapshot') is null alter table integration_configuration add workflow_snapshot nvarchar(max);
 if col_length('integration_configuration','execution_mode') is null alter table integration_configuration add execution_mode varchar(20) not null default 'SEQUENTIAL';
+update integration_configuration
+set base_url='https://apit.dubaitrade.ae', verification_path='/ext/v1/api/tasreeh/getKioskPassDetails', approval_field='$httpStatus', approval_value='200', execution_mode='SEQUENTIAL',
+workflow_snapshot=N'{"steps":[{"id":"authenticate","method":"POST","baseUrl":"https://autht.dubaitrade.ae","path":"/auth/realms/DTAPI/protocol/openid-connect/token","headers":{"Accept-Language":"en-US,en;q=0.5"},"contentType":"application/x-www-form-urlencoded","body":{"username":"{{secrets.TASREEH_USERNAME}}","password":"{{secrets.TASREEH_PASSWORD}}","client_id":"{{secrets.TASREEH_CLIENT_ID}}","client_secret":"{{secrets.TASREEH_CLIENT_SECRET}}","scope":"{{secrets.TASREEH_SCOPE}}","grant_type":"password"},"successStatusCodes":[200],"outputs":{"accessToken":"access_token"}},{"id":"getKioskPassDetails","method":"POST","path":"/ext/v1/api/tasreeh/getKioskPassDetails","headers":{"Accept-Language":"en-US,en;q=0.5","Authorization":"Bearer {{steps.authenticate.outputs.accessToken}}"},"body":{"passRefNumber":"{{input.gatePassId}}"},"successStatusCodes":[200],"outputs":{}}]}'
+where integration_key='TASREEH';
