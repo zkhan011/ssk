@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 class GatePassVerificationServiceTest {
   private HttpServer server;
@@ -50,6 +52,19 @@ class GatePassVerificationServiceTest {
   void resolvesNestedAndIndexedResponseFields() throws Exception {
     var json = new com.fasterxml.jackson.databind.ObjectMapper().readTree("{\"items\":[{\"result\":{\"approved\":true}}]}");
     assertNotNull(GatePassVerificationService.resolve(json, "items[0].result.approved"));
+  }
+
+  @Test
+  void verificationResultSurvivesAuditStorageFailure() {
+    VerificationExecutionLogRepository unavailableLogs = mock(VerificationExecutionLogRepository.class);
+    doThrow(new DataAccessResourceFailureException("audit database unavailable"))
+        .when(unavailableLogs).save(org.mockito.ArgumentMatchers.any(VerificationExecutionLog.class));
+
+    GatePassVerificationResponse result = new GatePassVerificationService(configurations, unavailableLogs,
+        new IntegrationWorkflowExecutor(configurations, new com.fasterxml.jackson.databind.ObjectMapper(), new org.springframework.mock.env.MockEnvironment()))
+        .verify("ABC-123", "KIOSK-1");
+
+    assertEquals("REJECTED", result.outcome());
   }
 
   private IntegrationConfiguration configuration(String path) {

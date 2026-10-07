@@ -10,10 +10,14 @@ import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GatePassVerificationService {
+  private static final Logger logger = LoggerFactory.getLogger(GatePassVerificationService.class);
   private final IntegrationConfigurationService configurations;
   private final VerificationExecutionLogRepository logs;
   private final IntegrationWorkflowExecutor workflowExecutor;
@@ -85,7 +89,12 @@ public class GatePassVerificationService {
     VerificationExecutionLog log = new VerificationExecutionLog();
     log.setCorrelationId(correlationId); log.setGatePassHash(hash(gatePassId)); log.setIntegrationKey(key);
     log.setOutcome(outcome); log.setHttpStatus(httpStatus); log.setDurationMs((System.nanoTime() - started) / 1_000_000);
-    logs.save(log);
+    try {
+      logs.save(log);
+    } catch (DataAccessException exception) {
+      // Verification must not be converted into a provider outage by an optional audit write.
+      logger.error("Unable to persist {} verification execution log; check Flyway migration status", key, exception);
+    }
   }
 
   private String hash(String value) {
