@@ -4,9 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.mock.env.MockEnvironment;
 
 class GatePassVerificationServiceTest {
   private HttpServer server;
@@ -24,11 +28,13 @@ class GatePassVerificationServiceTest {
   private AtomicInteger tasreehCalls;
   private AtomicInteger panguCalls;
   private AtomicReference<String> tasreehResponse;
+  private ObjectMapper mapper;
 
   @BeforeEach
   void startServer() throws Exception {
     tasreehCalls = new AtomicInteger();
     panguCalls = new AtomicInteger();
+    mapper = new ObjectMapper();
     tasreehResponse = new AtomicReference<>("""
         {"data":{"company":"Redacted Co","date":"2026-01-02","emiratesIdNumber":"XXX-0000",
         "hostNameAndApproverDepartment":"Test Host / QA","idProof":"REDACTED","location":"Test Port",
@@ -51,8 +57,8 @@ class GatePassVerificationServiceTest {
 
   @Test
   void requiresApprovalFromBothIntegrations() {
-    GatePassVerificationResponse result = new GatePassVerificationService(configurations,
-        mock(VerificationExecutionLogRepository.class), new IntegrationWorkflowExecutor(configurations, new com.fasterxml.jackson.databind.ObjectMapper(), new org.springframework.mock.env.MockEnvironment()), new com.fasterxml.jackson.databind.ObjectMapper()).verify("ABC-123", "KIOSK-1");
+    GatePassVerificationResponse result = service(mock(VerificationExecutionLogRepository.class))
+        .verify("ABC-123", "KIOSK-1");
     assertEquals("REJECTED", result.outcome());
     assertEquals(1, tasreehCalls.get());
     assertEquals(1, panguCalls.get());
@@ -76,10 +82,8 @@ class GatePassVerificationServiceTest {
         "message":null,"status":"FAILED","statusCode":null}
         """);
 
-    GatePassVerificationResponse result = new GatePassVerificationService(configurations,
-        mock(VerificationExecutionLogRepository.class),
-        new IntegrationWorkflowExecutor(configurations, new com.fasterxml.jackson.databind.ObjectMapper(), new org.springframework.mock.env.MockEnvironment()),
-        new com.fasterxml.jackson.databind.ObjectMapper()).verify("REF-INVALID", "KIOSK-1");
+    GatePassVerificationResponse result = service(mock(VerificationExecutionLogRepository.class))
+        .verify("REF-INVALID", "KIOSK-1");
 
     NormalizedVerificationResult tasreeh = result.integrations().get("TASREEH");
     assertFalse(tasreeh.verified());
@@ -96,7 +100,7 @@ class GatePassVerificationServiceTest {
 
   @Test
   void resolvesNestedAndIndexedResponseFields() throws Exception {
-    var json = new com.fasterxml.jackson.databind.ObjectMapper().readTree("{\"items\":[{\"result\":{\"approved\":true}}]}");
+    var json = mapper.readTree("{\"items\":[{\"result\":{\"approved\":true}}]}");
     assertNotNull(GatePassVerificationService.resolve(json, "items[0].result.approved"));
   }
 
@@ -106,11 +110,15 @@ class GatePassVerificationServiceTest {
     doThrow(new DataAccessResourceFailureException("audit database unavailable"))
         .when(unavailableLogs).save(org.mockito.ArgumentMatchers.any(VerificationExecutionLog.class));
 
-    GatePassVerificationResponse result = new GatePassVerificationService(configurations, unavailableLogs,
-        new IntegrationWorkflowExecutor(configurations, new com.fasterxml.jackson.databind.ObjectMapper(), new org.springframework.mock.env.MockEnvironment()), new com.fasterxml.jackson.databind.ObjectMapper())
+    GatePassVerificationResponse result = service(unavailableLogs)
         .verify("ABC-123", "KIOSK-1");
 
     assertEquals("REJECTED", result.outcome());
+  }
+
+  private GatePassVerificationService service(VerificationExecutionLogRepository logs) {
+    return new GatePassVerificationService(configurations, logs,
+        new IntegrationWorkflowExecutor(configurations, mapper, new MockEnvironment()), mapper);
   }
 
   private IntegrationConfiguration configuration(String path) {
