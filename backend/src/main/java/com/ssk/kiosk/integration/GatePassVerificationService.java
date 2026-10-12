@@ -1,6 +1,7 @@
 package com.ssk.kiosk.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,11 +22,13 @@ public class GatePassVerificationService {
   private final IntegrationConfigurationService configurations;
   private final VerificationExecutionLogRepository logs;
   private final IntegrationWorkflowExecutor workflowExecutor;
+  private final ObjectMapper mapper;
 
-  public GatePassVerificationService(IntegrationConfigurationService configurations, VerificationExecutionLogRepository logs, IntegrationWorkflowExecutor workflowExecutor) {
+  public GatePassVerificationService(IntegrationConfigurationService configurations, VerificationExecutionLogRepository logs, IntegrationWorkflowExecutor workflowExecutor, ObjectMapper mapper) {
     this.configurations = configurations;
     this.logs = logs;
     this.workflowExecutor = workflowExecutor;
+    this.mapper = mapper;
   }
 
   public GatePassVerificationResponse verify(String gatePassId, String kioskId) {
@@ -46,7 +49,8 @@ public class GatePassVerificationService {
     else if (isUnavailable(tasreehResult) && isUnavailable(panguResult)) outcome = "VERIFICATION_UNAVAILABLE";
     else if (isUnavailable(tasreehResult) || isUnavailable(panguResult)) outcome = "PARTIAL_FAILURE";
     else outcome = "REJECTED";
-    String message = "APPROVED".equals(outcome) ? "Gate Pass verified" : "Gate Pass verification was not approved";
+    String message = "APPROVED".equals(outcome) ? "Gate Pass verified"
+        : !tasreehResult.verified() ? tasreehResult.message() : panguResult.message();
     return new GatePassVerificationResponse(normalized, outcome, message, results);
   }
 
@@ -74,6 +78,9 @@ public class GatePassVerificationService {
       }
     }
     if (response == null) throw lastFailure == null ? new IllegalStateException("Empty integration response") : lastFailure;
+    if ("TASREEH".equals(key)) {
+      return normalizeTasreeh(response, httpStatus, correlationId, gatePassId, started);
+    }
     JsonNode approvalNode = resolve(response, config.getApprovalField());
     boolean approved = "$httpStatus".equals(config.getApprovalField())
         ? config.getApprovalValue().equals(String.valueOf(httpStatus))
@@ -83,6 +90,39 @@ public class GatePassVerificationService {
     return new NormalizedVerificationResult(key, approved, outcome,
         approved ? "Gate Pass verified" : "Gate Pass rejected", gatePassId,
         text(response, "applicationId"), text(response, "visitorName"), null, Map.of());
+  }
+
+  private NormalizedVerificationResult normalizeTasreeh(JsonNode response, Integer httpStatus, String correlationId,
+      String gatePassId, long started) {
+    TasreehKioskPassResponse envelope = mapper.convertValue(response, TasreehKioskPassResponse.class);
+    if (envelope == null) envelope = new TasreehKioskPassResponse(null, java.util.List.of(), null, null, null);
+    var errors = envelope.errors() == null ? java.util.List.<TasreehKioskPassResponse.TasreehError>of()
+        : envelope.errors().stream().filter(java.util.Objects::nonNull).toList();
+    boolean approved = httpStatus != null && httpStatus >= 200 && httpStatus < 300
+        && "SUCCESS".equalsIgnoreCase(envelope.status())
+        && Integer.valueOf(200).equals(envelope.statusCode())
+        && errors.isEmpty();
+    String outcome = approved ? "APPROVED" : "REJECTED";
+    String providerMessage = firstTasreehError(errors, envelope.message(), approved);
+    if (!approved && !errors.isEmpty()) {
+      logger.warn("Tasreeh rejected pass: errorCode={}, errorMessage={}", errors.getFirst().errCode(), errors.getFirst().errMsg());
+    }
+    recordExecution(correlationId, gatePassId, "TASREEH", outcome, httpStatus, started);
+    Map<String, Object> metadata = mapper.convertValue(envelope,
+        new com.fasterxml.jackson.core.type.TypeReference<LinkedHashMap<String, Object>>() {});
+    String visitorName = envelope.data() == null ? null : envelope.data().visitorName();
+    return new NormalizedVerificationResult("TASREEH", approved,
+        envelope.status() == null ? outcome : envelope.status(), providerMessage, gatePassId,
+        null, visitorName, null, metadata);
+  }
+
+  private String firstTasreehError(java.util.List<TasreehKioskPassResponse.TasreehError> errors,
+      String envelopeMessage, boolean approved) {
+    if (!errors.isEmpty() && errors.getFirst().errMsg() != null && !errors.getFirst().errMsg().isBlank()) {
+      return errors.getFirst().errMsg();
+    }
+    if (envelopeMessage != null && !envelopeMessage.isBlank()) return envelopeMessage;
+    return approved ? "Gate Pass verified" : "Tasreeh rejected the gate pass";
   }
 
   private void recordExecution(String correlationId, String gatePassId, String key, String outcome, Integer httpStatus, long started) {

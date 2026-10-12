@@ -29,8 +29,8 @@ class IntegrationWorkflowExecutorTest {
     IntegrationConfigurationService configurations=org.mockito.Mockito.mock(IntegrationConfigurationService.class);
     when(configurations.workflow(config)).thenReturn(List.of(
         Map.of("id","authenticate","method","POST","baseUrl","http://127.0.0.1:"+server.getAddress().getPort(),"path","/auth","contentType","application/x-www-form-urlencoded","body",Map.of("username","{{secrets.TASREEH_USERNAME}}","grant_type","password"),"successStatusCodes",List.of(200),"outputs",Map.of("accessToken","access_token")),
-        Map.of("id","employeeAccessSync","method","POST","path","/sync","headers",Map.of("Authorization","Bearer {{steps.authenticate.outputs.accessToken}}"),"body",Map.of("gatePassId","{{input.gatePassId}}"),"successStatusCodes",List.of(200),"outputs",Map.of())));
+        Map.of("id","getKioskPassDetails","method","POST","path","/sync","headers",Map.of("Authorization","Bearer {{steps.authenticate.outputs.accessToken}}"),"body",Map.of("passRefNumber","{{input.gatePassId}}"),"successStatusCodes",List.of(200),"outputs",Map.of())));
     var result=new IntegrationWorkflowExecutor(configurations,new ObjectMapper(),new MockEnvironment().withProperty("TASREEH_USERNAME","kiosk user")).execute(config,"ABC-123","KIOSK-1");
-    assertEquals(200,result.httpStatus());assertTrue(tokenContentType.get().startsWith("application/x-www-form-urlencoded"));assertTrue(tokenPayload.get().contains("grant_type=password"));assertTrue(tokenPayload.get().contains("username=kiosk+user"));assertEquals("Bearer token-123",authorization.get());assertEquals("ABC-123",new ObjectMapper().readTree(payload.get()).path("gatePassId").asText());
+    assertEquals(200,result.httpStatus());assertTrue(tokenContentType.get().startsWith("application/x-www-form-urlencoded"));assertTrue(tokenPayload.get().contains("grant_type=password"));assertTrue(tokenPayload.get().contains("username=kiosk+user"));assertEquals("Bearer token-123",authorization.get());var passRequest=new ObjectMapper().readTree(payload.get());assertEquals("ABC-123",passRequest.path("passRefNumber").asText());assertEquals(1,passRequest.size());
   }
 }
