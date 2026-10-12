@@ -13,6 +13,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:sqlserver://sqlserver:1433;databaseName=kiosk;encrypt=true;trustServerCertificate=true
       SPRING_DATASOURCE_USERNAME: sa
       SPRING_DATASOURCE_PASSWORD: ${MSSQL_SA_PASSWORD:-ChangeThis_DevelopmentPassword1}
+      TASREEH_USERNAME: ${TASREEH_USERNAME:-}
+      TASREEH_PASSWORD: ${TASREEH_PASSWORD:-}
+      TASREEH_CLIENT_ID: ${TASREEH_CLIENT_ID:-}
+      TASREEH_CLIENT_SECRET: ${TASREEH_CLIENT_SECRET:-}
+      TASREEH_SCOPE: ${TASREEH_SCOPE:-}
     ports: ["8080:8080"]
     depends_on: [sqlserver]
   frontend:
