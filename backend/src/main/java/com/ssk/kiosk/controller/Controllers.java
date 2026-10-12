@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -132,8 +133,11 @@ class ApiController {
   }
 
   @PostMapping("/verification/gate-pass")
-  GatePassVerificationResponse verifyGatePass(@RequestBody Map<String, String> request) {
-    return gatePassVerificationService.verify(request.get("gatePassId"), request.get("kioskId"));
+  GatePassVerificationResponse verifyGatePass(
+      @RequestBody Map<String, String> request,
+      @RequestHeader(value = "X-Kiosk-Id", required = false) String kioskIdHeader) {
+    String kioskId = kioskIdHeader == null || kioskIdHeader.isBlank() ? request.get("kioskId") : kioskIdHeader;
+    return gatePassVerificationService.verify(request.get("gatePassId"), kioskId);
   }
 
   @PostMapping("/passes/{id}/check-in")
@@ -170,10 +174,15 @@ class ApiController {
   @PostMapping("/pangu/register")
   Object panguRegister(@RequestBody Map<String, Object> request) {
     Object gatePassId = request.getOrDefault("gatePassId", "");
+    String faceImage = String.valueOf(request.getOrDefault("faceImage", ""));
+    if (faceImage.length() > 1_500_000 || !faceImage.matches("^data:image/jpeg;base64,[A-Za-z0-9+/]+={0,2}$")) {
+      throw new IllegalArgumentException("A JPEG camera capture is required");
+    }
     return Map.of(
         "registered", true,
         "reference", String.valueOf(gatePassId),
         "provider", "PANGU",
+        "source", "KIOSK_CAMERA",
         "registeredAt", Instant.now().toString());
   }
 

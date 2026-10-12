@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ScreenFlowService {
-  private static final Set<String> ROUTES=Set.of("/kiosk","/kiosk/language","/kiosk/validate","/kiosk/tesreeh-check","/kiosk/face-capture","/kiosk/access-granted");
+  private static final Set<String> ROUTES=Set.of("/kiosk","/kiosk/language","/kiosk/validate","/kiosk/tesreeh-check","/kiosk/face-capture","/kiosk/access-granted","/kiosk/access-denied","/kiosk/something-went-wrong");
   private final ScreenFlowConfigurationRepository repository; private final ObjectMapper mapper;
   public ScreenFlowService(ScreenFlowConfigurationRepository repository,ObjectMapper mapper){this.repository=repository;this.mapper=mapper;}
-  public Map<String,Object> defaults(){return Map.of("startRoute","/kiosk","successRoute","/kiosk/access-granted","failureRoute","/kiosk/validate","steps",List.of(step("/kiosk",true),step("/kiosk/language",false),step("/kiosk/validate",true),step("/kiosk/tesreeh-check",true),step("/kiosk/face-capture",false),step("/kiosk/access-granted",true)));}
+  public Map<String,Object> defaults(){return Map.of("startRoute","/kiosk","successRoute","/kiosk/access-granted","failureRoute","/kiosk/access-denied","steps",List.of(step("/kiosk",true),step("/kiosk/language",false),step("/kiosk/validate",true),step("/kiosk/tesreeh-check",true),step("/kiosk/face-capture",false),step("/kiosk/access-granted",true),step("/kiosk/access-denied",true),step("/kiosk/something-went-wrong",true)));}
   public Map<String,Object> published(){return repository.findFirstByStatusOrderByVersionNumberDesc(ScreenFlowConfiguration.Status.PUBLISHED).map(this::read).orElse(defaults());}
   public Map<String,Object> draft(){return repository.findFirstByStatusOrderByVersionNumberDesc(ScreenFlowConfiguration.Status.DRAFT).map(this::read).orElse(published());}
   @Transactional public Map<String,Object> saveDraft(Map<String,Object> value,String actor){validate(value);ScreenFlowConfiguration c=repository.findFirstByStatusOrderByVersionNumberDesc(ScreenFlowConfiguration.Status.DRAFT).orElseGet(ScreenFlowConfiguration::new);c.setStatus(ScreenFlowConfiguration.Status.DRAFT);c.setSnapshot(write(value));c.setChangedBy(actor);repository.save(c);return read(c);}
